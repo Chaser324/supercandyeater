@@ -15,7 +15,7 @@
 *.sln
 
 # Imported Assets
-**/Assets/NGUI/
+**/Assets/NGUI*
 **/Assets/Standard Assets/
 **/Assets/Editor/Image Effects
 
