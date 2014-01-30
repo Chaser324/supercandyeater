@@ -2,6 +2,8 @@
 
 A puzzle game for the [Candy Jam](http://itch.io/jam/candyjam) and [#1GAM](http://www.onegameamonth.com/).
 
+![screen1](https://github.com/Chaser324/supercandyeater/blob/master/screen1.gif?raw=true)
+
 ## Controls
 
 
