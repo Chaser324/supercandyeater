@@ -8,12 +8,27 @@ public class PlayerController : MonoBehaviour {
 	public enum FieldPosition { P1, P2 };
 	public enum FieldPlayer { Human, AI };
 
+	public const float CellSize = 15.0f / 100.0f;
+	public const int FieldCellWidth = 6;
+	public const int FieldCellHeight = 12;
+	public const float FieldWidth = FieldCellWidth * CellSize;
+	public const float FieldHeight = FieldCellHeight * CellSize;
+
+	public const float TickSize = CellSize / 5f;
+	public const float TickTime = 0.4f;
+
 	#endregion
 
 	#region Public Variables
 
-	public FieldPosition position;
+	public FieldPosition slot;
 	public FieldPlayer player;
+
+	public Transform fruitPrefab;
+	public Transform fruitControllerPrefab;
+	public Transform fruitContainer;
+
+	public float speed = 1.0f;
 
 	#endregion
 
@@ -21,8 +36,18 @@ public class PlayerController : MonoBehaviour {
 
 	private Vector2 lastScreenSize;
 
-	private FruitController[,] playfield = new FruitController[6,12];
-	private FruitPairController currentPiece;
+	private System.Random rng;
+
+	private FruitController[,] playfield = new FruitController[FieldCellWidth,FieldCellHeight];
+	private FruitPairController currentPair = null;
+
+	private bool tumbling = false;
+
+	private float elapsedTime;
+
+	private float lastHorizontalInput = 0f;
+	private float lastVerticalInput = 0f;
+	private float holdingTime = 0f;
 
 	#endregion
 
@@ -31,21 +56,78 @@ public class PlayerController : MonoBehaviour {
 	#region Event Handlers
 
 	void Start () {
+		rng = new System.Random(GameManager.Instance.CurrentMatch.RandomSeed);
+
+		for (int i=0; i<FieldCellWidth; i++) {
+			for (int j=0; j<FieldCellHeight; j++) {
+				playfield[i,j] = null;
+			}
+		}
 	}
 
 	void Update () {
 		UpdatePosition();
 
+		elapsedTime += Time.deltaTime * speed;
+
 		// Handle player input
+		HandleInput();
+        
+        if (elapsedTime > TickTime) {
+			elapsedTime -= TickTime;
 
-		// Apply gravity
+			// Spawn new piece
+			if (!tumbling) {
+				if (currentPair == null) {
+					Transform newPair = Instantiate(fruitControllerPrefab) as Transform;
+					newPair.parent = fruitContainer.transform;
+					currentPair = newPair.gameObject.GetComponent<FruitPairController>();
 
-		// Join pieces
+					for (int i=0; i<2; i++) {
+						Transform newFruit = Instantiate(fruitPrefab) as Transform;
+						newFruit.parent = currentPair.transform;
+						currentPair[i] = newFruit.gameObject.GetComponent<FruitController>();
+					}
+				}
+				
+	            // Apply gravity
+				currentPair.ApplyGravity();
 
-		// Remove pieces
+				if (currentPair.Grounded) {
+					int pairX = Mathf.CeilToInt(currentPair.transform.localPosition.x / CellSize);
+					int pairY = Mathf.CeilToInt(-1f * currentPair.transform.localPosition.y / CellSize) + 1;
 
+					playfield[pairX,pairY] = currentPair[0];
+					playfield[pairX + currentPair[1].xPos, pairY - currentPair[1].yPos] = currentPair[1];
 
+					tumbling = true;
+					currentPair = null;
+				}
+			}
+			else {
+	            // Apply gravity
 
+				// Join pieces
+
+				// Remove pieces
+
+				tumbling = false;
+			}
+		}
+
+	}
+
+	#endregion
+
+	#region Public Methods
+
+	public bool CellOccupied(int x, int y) {
+		if (x >= 0 && y >= 0 && x < FieldCellWidth && y < FieldCellHeight && playfield[x,y] == null) {
+			return false;
+		}
+		else {
+			return true;
+		}
 	}
 
 	#endregion
@@ -61,13 +143,41 @@ public class PlayerController : MonoBehaviour {
 			float screenHeight = Camera.main.pixelHeight;
 			float screenWidth = Camera.main.pixelWidth;
 			
-			if (position == FieldPosition.P1) {
+			if (slot == FieldPosition.P1) {
 				transform.position = Camera.main.ScreenToWorldPoint(new Vector3(25,screenHeight-25,10));
 			}
 			else {
 				transform.position = Camera.main.ScreenToWorldPoint(new Vector3(screenWidth-(98*3)-20,screenHeight-25,10));
 			}
 		}
+	}
+
+	private void HandleInput() {
+		if (currentPair != null) {
+			float horizontal = Input.GetAxis("Horizontal");
+			float vertical = Input.GetAxis("Vertical");
+
+			if (horizontal != lastHorizontalInput || vertical != lastVerticalInput) {
+				holdingTime = 0f;
+			}
+			else if (horizontal != 0 || vertical != 0) {
+				holdingTime += Time.deltaTime;
+			}
+
+			lastHorizontalInput = horizontal;
+			lastVerticalInput = vertical;
+
+			if (horizontal == 1.0f && holdingTime == 0f) {
+				currentPair.Translate(1);
+			}
+			else if (horizontal == -1.0f && holdingTime == 0f) {
+				currentPair.Translate(-1);
+			}
+		}
+	}
+
+	private void ApplyGravity() {
+
 	}
 
 	#endregion

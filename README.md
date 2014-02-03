@@ -45,4 +45,4 @@ Things I planned to do that I eventually dropped due to time constraints.
 ### Special Thanks
 * [@itchio](https://twitter.com/itchio) and [@moonscript](https://twitter.com/moonscript) for hosting the Candy Jam site.
 * Awesome people that provided great feedback and motivation including [@aurahack](https://twitter.com/aurahack), [@DarkestKale](https://twitter.com/DarkestKale), [@zapakitul](https://twitter.com/zapakitul)
-* Excellent tutorials on new Unity 4.3 2D tools from [Chris LaPollo](http://www.raywenderlich.com/61532/unity-2d-tutorial-getting-started) ([@ChrisLaPollo](https://twitter.com/ChrisLaPollo)), [Pixelnest](http://pixelnest.io/tutorials/2d-game-unity/) ([@pixelnext](https://twitter.com/pixelnest)), and [Unity3D](http://www.youtube.com/watch?v=4qE8cuHI93c) [@unity3d](https://twitter.com/unity3d).
+* Excellent tutorials on new Unity 4.3 2D tools from [Pixelnest](http://pixelnest.io/tutorials/2d-game-unity/) ([@pixelnext](https://twitter.com/pixelnest)), and [Unity3D](http://www.youtube.com/watch?v=4qE8cuHI93c) [@unity3d](https://twitter.com/unity3d).
