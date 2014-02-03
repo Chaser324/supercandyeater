@@ -39,6 +39,17 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 7e1eeb9aba98db4459e33049f97ab780, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  fruitSprites:
+  - {fileID: 21300000, guid: 0466ec026d070ad42a0e1ac5de75bb1e, type: 3}
+  - {fileID: 21300000, guid: f65ed0e9b3ac7e74083e5d5ea7b79b12, type: 3}
+  - {fileID: 21300000, guid: d8cd7df13c36a2d4abcc1e1406b888ee, type: 3}
+  - {fileID: 21300000, guid: 48529abc8bd624d439c4459c2ec7ccb4, type: 3}
+  xPos: 0
+  yPos: 0
+  height: 0
+  width: 0
+  type: 0
+  color: 0
 --- !u!212 &21200000
 SpriteRenderer:
   m_ObjectHideFlags: 1

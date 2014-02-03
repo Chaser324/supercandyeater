@@ -41,6 +41,64 @@ public class FruitPairController : MonoBehaviour {
 	#region Public Methods
 
 	public void Rotate(int direction) {
+		int fruit1X = Mathf.CeilToInt(this.transform.localPosition.x / PlayerController.CellSize);
+		int fruit1Y = -1 * Mathf.CeilToInt(this.transform.localPosition.y / PlayerController.CellSize) + 1;
+
+		// Get desired coordinates for fruit2
+		// (x,y) rotated left is (-y,x)
+		// (x,y) rotated right is (y,-x)
+		int nextFruit2Xpos = 0;
+		int nextFruit2Ypos = 0;
+		int nextFruit1Xpos = 0;
+		int nextFruit1Ypos = 0;
+        if (direction == 1) {
+			// rotate right
+			nextFruit2Xpos = fruit[1].yPos;
+			nextFruit2Ypos = fruit[1].xPos * -1;
+		}
+		else {
+			// rotate left
+			nextFruit2Xpos = fruit[1].yPos * -1;
+			nextFruit2Ypos = fruit[1].xPos;
+		}
+
+		if (player.CellOccupied(fruit1X+nextFruit2Xpos,fruit1Y+nextFruit2Ypos)) {
+			// If desired coordinates are occupied, check if fruit1 can rotate opposite direction
+
+			if (direction == -1) {
+				// rotate right
+				nextFruit1Xpos = fruit[1].yPos;
+				nextFruit1Ypos = fruit[1].xPos * -1;
+			}
+			else {
+				// rotate left
+				nextFruit1Xpos = fruit[1].yPos * -1;
+				nextFruit1Ypos = fruit[1].xPos;
+			}
+
+			if (player.CellOccupied(fruit1X+nextFruit1Xpos,fruit1Y+nextFruit1Ypos)) {
+				// If possible fruit1 space is occupied, flip fruit1 and fruit2
+				nextFruit2Xpos = fruit[1].xPos * -1;
+				nextFruit2Ypos = fruit[1].yPos * -1;
+			}
+		}
+		
+		this.transform.localPosition = 
+			new Vector3(this.transform.localPosition.x + nextFruit1Xpos * PlayerController.CellSize, 
+			            this.transform.localPosition.y + nextFruit1Ypos * PlayerController.CellSize, 
+			            0);
+		fruit[1].xPos = nextFruit2Xpos;
+		fruit[1].yPos = nextFruit2Ypos;
+		fruit[1].transform.localPosition = 
+			new Vector3(fruit[1].xPos * 4f * PlayerController.CellSize,
+			            fruit[1].yPos * 4f * PlayerController.CellSize,
+			            0);
+	}
+
+	public void InstantDrop() {
+		while (!grounded) {
+			ApplyGravity();
+		}
 	}
 
 	public void Translate(int direction) {
@@ -64,7 +122,7 @@ public class FruitPairController : MonoBehaviour {
 		nextPos.y -= PlayerController.TickSize;
 
 		int fruit1X = Mathf.CeilToInt(nextPos.x / PlayerController.CellSize);
-		int fruit1Y = -1 * Mathf.f(nextPos.y / PlayerController.CellSize) + 1;
+		int fruit1Y = -1 * Mathf.CeilToInt(nextPos.y / PlayerController.CellSize) + 1;
 		int fruit2X = fruit1X + fruit[1].xPos;
 		int fruit2Y = fruit1Y - fruit[1].yPos + 1;
 		

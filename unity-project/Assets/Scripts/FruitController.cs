@@ -3,15 +3,18 @@ using System.Collections;
 
 public class FruitController : MonoBehaviour {
 
+	public Sprite[] fruitSprites;
+
 	public enum FruitColor {
 		Red = 0,
 		Green,
 		Yellow,
-		Orange
+		Orange,
+		MAX
 	}
 
 	public enum FruitType {
-		Standard,
+		Standard = 0,
 		Crash,
 		SuperCrash,
 		Counter
@@ -23,8 +26,12 @@ public class FruitController : MonoBehaviour {
 	public int height;
 	public int width;
 
+	public FruitType type;
+	public FruitColor color;
+
 	void Start () {
-	
+		SpriteRenderer sr = this.GetComponent<SpriteRenderer>();
+		sr.sprite = fruitSprites[(int)color];
 	}
 
 	void Update () {

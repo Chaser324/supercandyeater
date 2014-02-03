@@ -84,7 +84,13 @@ public class PlayerController : MonoBehaviour {
 					for (int i=0; i<2; i++) {
 						Transform newFruit = Instantiate(fruitPrefab) as Transform;
 						newFruit.parent = currentPair.transform;
-						currentPair[i] = newFruit.gameObject.GetComponent<FruitController>();
+
+						FruitController newFruitController = newFruit.gameObject.GetComponent<FruitController>();
+						newFruitController.type = FruitController.FruitType.Standard;
+						newFruitController.color = (FruitController.FruitColor)(rng.Next((int)FruitController.FruitColor.MAX));
+
+
+						currentPair[i] = newFruitController;
 					}
 				}
 				else {
@@ -159,6 +165,9 @@ public class PlayerController : MonoBehaviour {
 		if (currentPair != null) {
 			float horizontal = Input.GetAxis("Horizontal");
 			float vertical = Input.GetAxis("Vertical");
+			bool instantDrop = Input.GetButtonDown("InstantDrop");
+			bool rotateRight = Input.GetButtonDown("RotateRight");
+			bool rotateLeft = Input.GetButtonDown("RotateLeft");
 
 			if (horizontal != lastHorizontalInput || vertical != lastVerticalInput) {
 				holdingTime = 0f;
@@ -174,7 +183,16 @@ public class PlayerController : MonoBehaviour {
 				speed = 1.0f;
 			}
 
-			if (horizontal == 1.0f && holdingTime == 0f) {
+			if (instantDrop) {
+				currentPair.InstantDrop();
+			}
+			else if (rotateRight) {
+				currentPair.Rotate(1);
+			}
+			else if (rotateLeft) {
+				currentPair.Rotate(-1);
+            }
+            else if (horizontal == 1.0f && holdingTime == 0f) {
 				currentPair.Translate(1);
 			}
 			else if (horizontal == -1.0f && holdingTime == 0f) {
