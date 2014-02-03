@@ -94,6 +94,9 @@ public class PlayerController : MonoBehaviour {
 				currentPair.ApplyGravity();
 
 				if (currentPair.Grounded) {
+					currentPair[0].transform.parent = fruitContainer;
+					currentPair[1].transform.parent = fruitContainer;
+
 					int pairX = Mathf.CeilToInt(currentPair.transform.localPosition.x / CellSize);
 					int pairY = Mathf.CeilToInt(-1f * currentPair.transform.localPosition.y / CellSize) + 1;
 
@@ -101,6 +104,7 @@ public class PlayerController : MonoBehaviour {
 					playfield[pairX + currentPair[1].xPos, pairY - currentPair[1].yPos] = currentPair[1];
 
 					tumbling = true;
+					Destroy(currentPair.gameObject);
 					currentPair = null;
 				}
 			}

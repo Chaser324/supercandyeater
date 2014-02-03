@@ -58,8 +58,6 @@ public class FruitPairController : MonoBehaviour {
 		int fruit1Y = -1 * Mathf.CeilToInt(nextPos.y / PlayerController.CellSize) + 1;
 		int fruit2X = fruit1X + fruit[1].xPos;
 		int fruit2Y = fruit1Y - fruit[1].yPos + 1;
-
-		Debug.Log(fruit2X.ToString() + ',' + fruit2Y.ToString());
 		
 		bool occupied = player.CellOccupied(fruit1X,fruit1Y) || player.CellOccupied(fruit2X,fruit2Y);
 
