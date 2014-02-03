@@ -3,10 +3,16 @@ using System.Collections;
 
 public class FruitPairController : MonoBehaviour {
 
+	#region Private Variables
+
 	private FruitController[] fruit = new FruitController[2];
 	private PlayerController player;
 
 	private bool grounded = false;
+
+	#endregion
+
+	#region Event Handlers
 
 	void Start () {
 		player = this.transform.parent.parent.GetComponent<PlayerController>();
@@ -28,8 +34,11 @@ public class FruitPairController : MonoBehaviour {
 	}
 
 	void Update () {
-	
 	}
+
+	#endregion
+
+	#region Public Methods
 
 	public void Rotate(int direction) {
 	}
@@ -55,7 +64,7 @@ public class FruitPairController : MonoBehaviour {
 		nextPos.y -= PlayerController.TickSize;
 
 		int fruit1X = Mathf.CeilToInt(nextPos.x / PlayerController.CellSize);
-		int fruit1Y = -1 * Mathf.CeilToInt(nextPos.y / PlayerController.CellSize) + 1;
+		int fruit1Y = -1 * Mathf.f(nextPos.y / PlayerController.CellSize) + 1;
 		int fruit2X = fruit1X + fruit[1].xPos;
 		int fruit2Y = fruit1Y - fruit[1].yPos + 1;
 		
@@ -68,6 +77,8 @@ public class FruitPairController : MonoBehaviour {
 			grounded = true;
 		}
 	}
+
+	#endregion
 
 	#region Public Properties
 

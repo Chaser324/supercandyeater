@@ -8,13 +8,13 @@ public class PlayerController : MonoBehaviour {
 	public enum FieldPosition { P1, P2 };
 	public enum FieldPlayer { Human, AI };
 
-	public const float CellSize = 15.0f / 100.0f;
+	public const float CellSize = 0.15f;
 	public const int FieldCellWidth = 6;
 	public const int FieldCellHeight = 12;
 	public const float FieldWidth = FieldCellWidth * CellSize;
 	public const float FieldHeight = FieldCellHeight * CellSize;
 
-	public const float TickSize = CellSize / 5f;
+	public const float TickSize = 0.03f;
 	public const float TickTime = 0.4f;
 
 	#endregion
@@ -50,9 +50,7 @@ public class PlayerController : MonoBehaviour {
 	private float holdingTime = 0f;
 
 	#endregion
-
-
-
+	
 	#region Event Handlers
 
 	void Start () {
@@ -89,23 +87,24 @@ public class PlayerController : MonoBehaviour {
 						currentPair[i] = newFruit.gameObject.GetComponent<FruitController>();
 					}
 				}
-				
-	            // Apply gravity
-				currentPair.ApplyGravity();
+				else {
+		            // Apply gravity
+					currentPair.ApplyGravity();
 
-				if (currentPair.Grounded) {
-					currentPair[0].transform.parent = fruitContainer;
-					currentPair[1].transform.parent = fruitContainer;
+					if (currentPair.Grounded) {
+						currentPair[0].transform.parent = fruitContainer;
+						currentPair[1].transform.parent = fruitContainer;
 
-					int pairX = Mathf.CeilToInt(currentPair.transform.localPosition.x / CellSize);
-					int pairY = Mathf.CeilToInt(-1f * currentPair.transform.localPosition.y / CellSize) + 1;
+						int pairX = Mathf.CeilToInt(currentPair.transform.localPosition.x / CellSize);
+						int pairY = Mathf.CeilToInt(-1f * currentPair.transform.localPosition.y / CellSize) + 1;
 
-					playfield[pairX,pairY] = currentPair[0];
-					playfield[pairX + currentPair[1].xPos, pairY - currentPair[1].yPos] = currentPair[1];
+						playfield[pairX,pairY] = currentPair[0];
+						playfield[pairX + currentPair[1].xPos, pairY - currentPair[1].yPos] = currentPair[1];
 
-					tumbling = true;
-					Destroy(currentPair.gameObject);
-					currentPair = null;
+						tumbling = true;
+						Destroy(currentPair.gameObject);
+						currentPair = null;
+					}
 				}
 			}
 			else {
@@ -171,18 +170,31 @@ public class PlayerController : MonoBehaviour {
 			lastHorizontalInput = horizontal;
 			lastVerticalInput = vertical;
 
+			if (vertical == 0f) {
+				speed = 1.0f;
+			}
+
 			if (horizontal == 1.0f && holdingTime == 0f) {
 				currentPair.Translate(1);
 			}
 			else if (horizontal == -1.0f && holdingTime == 0f) {
 				currentPair.Translate(-1);
 			}
+			else if (vertical == -1.0f) {
+				speed = 10.0f;
+			}
+
 		}
 	}
 
 	private void ApplyGravity() {
 
 	}
+
+	#endregion
+
+	#region Public Properties
+
 
 	#endregion
 }
