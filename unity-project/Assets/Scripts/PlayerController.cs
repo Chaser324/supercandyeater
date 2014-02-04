@@ -56,6 +56,8 @@ public class PlayerController : MonoBehaviour {
 
 	private float crashChance = 0.0f;
 
+	private bool lost = false;
+
 	#endregion
 	
 	#region Event Handlers
@@ -78,7 +80,7 @@ public class PlayerController : MonoBehaviour {
 		// Handle player input
 		HandleInput();
         
-        if (elapsedTime >= TickTime) {
+        if (elapsedTime >= TickTime && !lost) {
 			elapsedTime -= TickTime;
 
 			if (!tumbling) {
@@ -105,33 +107,7 @@ public class PlayerController : MonoBehaviour {
 				}
 			}
 			else {
-				if (tumblePhase == 0) {
-					speed = 100.0f;
-					if (!ApplyGravity()) {
-						++tumblePhase;
-					}
-				}
-				else if (tumblePhase == 1) {
-					// Join pieces
-					++tumblePhase;
-				}
-				else if (tumblePhase == 2) {
-					// Remove fruit
-					int crashed = RemoveFruit();
-					if (crashed > 0) {
-						RemoveFruit();
-						tumblePhase = 0;
-					}
-					else if (crashed == 0) {
-                        ++tumblePhase;
-					}
-				}
-				else {
-					speed = 1.0f;
-					elapsedTime = 0;
-					tumbling = false;
-					tumblePhase = 0;
-				}
+				Tumble();
 			}
 		}
 
@@ -172,7 +148,42 @@ public class PlayerController : MonoBehaviour {
 		}
 	}
 
-	private void HandleInput() {
+	private void Tumble() {
+		if (tumblePhase == 0) {
+			speed = 100.0f;
+			if (!ApplyGravity()) {
+				++tumblePhase;
+			}
+		}
+		else if (tumblePhase == 1) {
+			// Join pieces
+			++tumblePhase;
+		}
+		else if (tumblePhase == 2) {
+			// Remove fruit
+			int crashed = RemoveFruit();
+			if (crashed > 0) {
+				RemoveFruit();
+				tumblePhase = 0;
+			}
+			else if (crashed == 0) {
+				++tumblePhase;
+			}
+        }
+        else {
+            speed = 1.0f;
+            elapsedTime = 0;
+            tumbling = false;
+            tumblePhase = 0;
+        }
+    }
+    
+    private void Lose() {
+        Debug.Log("lost");
+		lost = true;
+    }
+    
+    private void HandleInput() {
 		if (currentPair != null) {
 			float horizontal = Input.GetAxis("Horizontal");
 			float vertical = Input.GetAxis("Vertical");
@@ -354,9 +365,14 @@ public class PlayerController : MonoBehaviour {
 		currentPair[1].xPos += pairX;
 		currentPair[1].yPos *= -1;
 		currentPair[1].yPos += pairY;
-		
-		playfield[currentPair[0].xPos, currentPair[0].yPos] = currentPair[0];
-		playfield[currentPair[1].xPos, currentPair[1].yPos] = currentPair[1];
+
+		if (currentPair[0].yPos < 1 || currentPair[1].yPos < 1) {
+			Lose ();
+        }
+		else {
+			playfield[currentPair[0].xPos, currentPair[0].yPos] = currentPair[0];
+			playfield[currentPair[1].xPos, currentPair[1].yPos] = currentPair[1];
+		}
 		
 		float jellyIntensity = Input.GetButtonDown("InstantDrop") ? 0.5f : 0.1f;
 		currentPair[0].Jelly(jellyIntensity);
