@@ -78,6 +78,8 @@ public class FruitPairController : MonoBehaviour {
 
 			if (player.CellOccupied(fruit1X+nextFruit1Xpos,fruit1Y+nextFruit1Ypos)) {
 				// If possible fruit1 space is occupied, flip fruit1 and fruit2
+				nextFruit1Xpos = fruit[1].xPos;
+				nextFruit1Ypos = fruit[1].yPos;
 				nextFruit2Xpos = fruit[1].xPos * -1;
 				nextFruit2Ypos = fruit[1].yPos * -1;
 			}
@@ -110,25 +112,25 @@ public class FruitPairController : MonoBehaviour {
 		int fruit2X = fruit1X + fruit[1].xPos;
 		int fruit2Y = fruit1Y - fruit[1].yPos + 1;
 
-		bool occupied = player.CellOccupied(fruit1X,fruit1Y) || player.CellOccupied(fruit2X,fruit2Y);
-
-		if (!occupied) {
+		if (!player.CellOccupied(fruit1X,fruit1Y) && !player.CellOccupied(fruit2X,fruit2Y)) {
 			this.transform.localPosition = nextPos;
 		}
 	}
 
 	public void ApplyGravity() {
+		if (grounded) {
+			return;
+		}
+
 		Vector3 nextPos = this.transform.localPosition;
 		nextPos.y -= PlayerController.TickSize;
 
 		int fruit1X = Mathf.CeilToInt(nextPos.x / PlayerController.CellSize);
-		int fruit1Y = -1 * Mathf.CeilToInt(nextPos.y / PlayerController.CellSize) + 1;
+		int fruit1Y = -1 * Mathf.CeilToInt(nextPos.y / PlayerController.CellSize) + 2;
 		int fruit2X = fruit1X + fruit[1].xPos;
-		int fruit2Y = fruit1Y - fruit[1].yPos + 1;
-		
-		bool occupied = player.CellOccupied(fruit1X,fruit1Y) || player.CellOccupied(fruit2X,fruit2Y);
+		int fruit2Y = fruit1Y - fruit[1].yPos;
 
-		if (!occupied) {
+		if (!player.CellOccupied(fruit1X,fruit1Y) && !player.CellOccupied(fruit2X,fruit2Y)) {
 			this.transform.localPosition = nextPos;
 		}
 		else {

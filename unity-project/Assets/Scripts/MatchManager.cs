@@ -13,7 +13,7 @@ public class MatchManager : MonoBehaviour {
 
 	private int randomSeed;
 
-	private PlayerController[] players = new PlayerController[2];
+	private PlayerController[] players = new PlayerController[1];
 
 	#endregion
 
@@ -30,8 +30,8 @@ public class MatchManager : MonoBehaviour {
 		players[0].slot = PlayerController.FieldPosition.P1;
 		players[0].player = GameManager.Instance.PlayerOne;
 
-		players[1].slot = PlayerController.FieldPosition.P2;
-		players[1].player = GameManager.Instance.PlayerTwo;
+//		players[1].slot = PlayerController.FieldPosition.P2;
+//		players[1].player = GameManager.Instance.PlayerTwo;
 	}
 
 	void Update () {

@@ -29,6 +29,8 @@ public class FruitController : MonoBehaviour {
 	public FruitType type;
 	public FruitColor color;
 
+	public bool falling = false;
+
 	void Start () {
 		SpriteRenderer sr = this.GetComponent<SpriteRenderer>();
 		sr.sprite = fruitSprites[(int)color];

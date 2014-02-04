@@ -89,7 +89,6 @@ public class PlayerController : MonoBehaviour {
 						newFruitController.type = FruitController.FruitType.Standard;
 						newFruitController.color = (FruitController.FruitColor)(rng.Next((int)FruitController.FruitColor.MAX));
 
-
 						currentPair[i] = newFruitController;
 					}
 				}
@@ -104,8 +103,15 @@ public class PlayerController : MonoBehaviour {
 						int pairX = Mathf.CeilToInt(currentPair.transform.localPosition.x / CellSize);
 						int pairY = Mathf.CeilToInt(-1f * currentPair.transform.localPosition.y / CellSize) + 1;
 
-						playfield[pairX,pairY] = currentPair[0];
-						playfield[pairX + currentPair[1].xPos, pairY - currentPair[1].yPos] = currentPair[1];
+						currentPair[0].xPos += pairX;
+						currentPair[0].yPos *= -1;
+						currentPair[0].yPos += pairY;
+						currentPair[1].xPos += pairX;
+						currentPair[1].yPos *= -1;
+						currentPair[1].yPos += pairY;
+
+						playfield[currentPair[0].xPos, currentPair[0].yPos] = currentPair[0];
+						playfield[currentPair[1].xPos, currentPair[1].yPos] = currentPair[1];
 
 						tumbling = true;
 						Destroy(currentPair.gameObject);
@@ -114,13 +120,18 @@ public class PlayerController : MonoBehaviour {
 				}
 			}
 			else {
+				speed = 100.0f;
 	            // Apply gravity
+				tumbling = ApplyGravity();
+
 
 				// Join pieces
 
 				// Remove pieces
 
-				tumbling = false;
+				if (!tumbling) {
+					speed = 1.0f;
+				}
 			}
 		}
 
@@ -205,8 +216,48 @@ public class PlayerController : MonoBehaviour {
 		}
 	}
 
-	private void ApplyGravity() {
+	private bool ApplyGravity() {
+		bool falling = false;
 
+		for (int col=0; col<FieldCellWidth; col++) {
+			for (int row=FieldCellHeight-1; row>=0; row--) {
+				FruitController fruit = playfield[col,row];
+				if (fruit != null) {
+					if (fruit.falling) {
+						Vector3 nextPos = fruit.transform.localPosition;
+						nextPos.y -= PlayerController.TickSize;
+
+						int newY = -1 * Mathf.CeilToInt(nextPos.y / PlayerController.CellSize) + 1;
+
+						if (newY == fruit.yPos) {
+							if (!CellOccupied(col,row+1)) {
+								fruit.falling = true;
+								fruit.yPos += 1;
+								playfield[col,row] = null;
+                                playfield[col,row+1] = fruit;
+								fruit.transform.localPosition = nextPos;
+                            }
+							else {
+								fruit.falling = false;
+							}
+						}
+						else {
+							fruit.transform.localPosition = nextPos;
+						}
+					}
+					else if (!CellOccupied(col,row+1)) {
+						fruit.falling = true;
+						fruit.yPos += 1;
+						playfield[col,row] = null;
+						playfield[col,row+1] = fruit;
+					}
+
+					falling |= fruit.falling;
+				}
+			}
+		}
+
+		return falling;
 	}
 
 	#endregion
