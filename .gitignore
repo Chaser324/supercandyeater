@@ -17,8 +17,9 @@
 
 # Imported Assets
 **/Assets/NGUI*
-**/Assets/Standard Assets/
-**/Assets/Editor/Image Effects
+**/Assets/iTween*
+**/Assets/Standard Assets*
+**/Assets/Editor/Image Effects*
 
 ################
 # Sublime Text #

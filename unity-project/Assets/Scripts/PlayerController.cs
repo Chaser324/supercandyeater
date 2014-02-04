@@ -113,6 +113,9 @@ public class PlayerController : MonoBehaviour {
 						playfield[currentPair[0].xPos, currentPair[0].yPos] = currentPair[0];
 						playfield[currentPair[1].xPos, currentPair[1].yPos] = currentPair[1];
 
+						playfield[currentPair[0].xPos, currentPair[0].yPos].jelly();
+						playfield[currentPair[1].xPos, currentPair[1].yPos].jelly();
+
 						tumbling = true;
 						Destroy(currentPair.gameObject);
 						currentPair = null;
