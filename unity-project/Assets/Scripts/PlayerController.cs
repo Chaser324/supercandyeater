@@ -71,7 +71,7 @@ public class PlayerController : MonoBehaviour {
 		// Handle player input
 		HandleInput();
         
-        if (elapsedTime > TickTime) {
+        if (elapsedTime >= TickTime) {
 			elapsedTime -= TickTime;
 
 			// Spawn new piece
@@ -113,9 +113,10 @@ public class PlayerController : MonoBehaviour {
 						playfield[currentPair[0].xPos, currentPair[0].yPos] = currentPair[0];
 						playfield[currentPair[1].xPos, currentPair[1].yPos] = currentPair[1];
 
-						playfield[currentPair[0].xPos, currentPair[0].yPos].jelly();
-						playfield[currentPair[1].xPos, currentPair[1].yPos].jelly();
-
+						float jellyIntensity = Input.GetButtonDown("InstantDrop") ? 0.5f : 0.1f;
+						currentPair[0].jelly(jellyIntensity);
+						currentPair[1].jelly(jellyIntensity);
+                        
 						tumbling = true;
 						Destroy(currentPair.gameObject);
 						currentPair = null;
@@ -199,6 +200,9 @@ public class PlayerController : MonoBehaviour {
 
 			if (instantDrop) {
 				currentPair.InstantDrop();
+				if (elapsedTime < TickTime) {
+					elapsedTime = TickTime;
+				}
 			}
 			else if (rotateRight) {
 				currentPair.Rotate(1);
