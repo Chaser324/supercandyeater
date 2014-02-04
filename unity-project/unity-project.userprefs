@@ -2,11 +2,11 @@
   <MonoDevelop.Ide.Workspace ActiveConfiguration="Debug" />
   <MonoDevelop.Ide.Workbench ActiveDocument="Assets\Scripts\PlayerController.cs">
     <Files>
-      <File FileName="Assets\Scripts\PlayerController.cs" Line="192" Column="23" />
-      <File FileName="Assets\Scripts\MatchManager.cs" Line="35" Column="3" />
+      <File FileName="Assets\Scripts\PlayerController.cs" Line="111" Column="36" />
+      <File FileName="Assets\Scripts\MatchManager.cs" Line="33" Column="7" />
       <File FileName="Assets\Scripts\GameManager.cs" Line="55" Column="32" />
-      <File FileName="Assets\Scripts\FruitPairController.cs" Line="89" Column="19" />
-      <File FileName="Assets\Scripts\FruitController.cs" Line="25" Column="2" />
+      <File FileName="Assets\Scripts\FruitPairController.cs" Line="137" Column="20" />
+      <File FileName="Assets\Scripts\FruitController.cs" Line="32" Column="30" />
     </Files>
   </MonoDevelop.Ide.Workbench>
   <MonoDevelop.Ide.DebuggingService.Breakpoints>
