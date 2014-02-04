@@ -16,14 +16,14 @@ public class GameManager : MonoBehaviour {
 		DontDestroyOnLoad(transform.gameObject);
 	}
 
-	void Start () {
+	void Start() {
 	}
 
 	void OnApplicationQuit() {
 		instance = null;
 	}
 
-	void Update () {
+	void Update() {
 	}
 
 	#endregion

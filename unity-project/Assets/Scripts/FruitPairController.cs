@@ -14,10 +14,10 @@ public class FruitPairController : MonoBehaviour {
 
 	#region Event Handlers
 
-	void Start () {
+	void Start() {
 		player = this.transform.parent.parent.GetComponent<PlayerController>();
 
-		this.transform.localPosition = new Vector3(3f * PlayerController.CellSize, 0, 0);
+		this.transform.localPosition = new Vector3(3f * PlayerController.CellSize, 2f * PlayerController.CellSize, 0);
 
 		fruit[0].transform.localPosition = new Vector3(0,0,0);
 		fruit[1].transform.localPosition = new Vector3(0, -1f * 4f * PlayerController.CellSize, 0);
@@ -33,12 +33,22 @@ public class FruitPairController : MonoBehaviour {
 		fruit[1].width = 1;
 	}
 
-	void Update () {
+	void Update() {
 	}
 
 	#endregion
 
 	#region Public Methods
+
+	public void MakeVisible() {
+		fruit[0].Show();
+		fruit[1].Show();
+	}
+
+	public void MakeCurrent() {
+		MakeVisible();
+		this.transform.Find("highlight").gameObject.SetActive(true);
+    }
 
 	public void Rotate(int direction) {
 		int fruit1X = Mathf.CeilToInt(this.transform.localPosition.x / PlayerController.CellSize);
@@ -108,9 +118,9 @@ public class FruitPairController : MonoBehaviour {
 		nextPos.x += direction * PlayerController.CellSize;
 
 		int fruit1X = Mathf.CeilToInt(nextPos.x / PlayerController.CellSize);
-		int fruit1Y = -1 * Mathf.CeilToInt(nextPos.y / PlayerController.CellSize) + 1;
+		int fruit1Y = -1 * Mathf.CeilToInt(nextPos.y / PlayerController.CellSize) + 2;
 		int fruit2X = fruit1X + fruit[1].xPos;
-		int fruit2Y = fruit1Y - fruit[1].yPos + 1;
+		int fruit2Y = fruit1Y - fruit[1].yPos;
 
 		if (!player.CellOccupied(fruit1X,fruit1Y) && !player.CellOccupied(fruit2X,fruit2Y)) {
 			this.transform.localPosition = nextPos;

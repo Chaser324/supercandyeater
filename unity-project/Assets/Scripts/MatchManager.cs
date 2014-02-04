@@ -17,7 +17,7 @@ public class MatchManager : MonoBehaviour {
 
 	#endregion
 
-	void Start () {
+	void Start() {
 		GameManager.Instance.CurrentMatch = this;
 
 		randomSeed = (int)System.DateTime.Now.Ticks;
@@ -34,7 +34,7 @@ public class MatchManager : MonoBehaviour {
 //		players[1].player = GameManager.Instance.PlayerTwo;
 	}
 
-	void Update () {
+	void Update() {
 	}
 
 	#region Public Properties

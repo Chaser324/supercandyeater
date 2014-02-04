@@ -44,12 +44,19 @@ MonoBehaviour:
   - {fileID: 21300000, guid: f65ed0e9b3ac7e74083e5d5ea7b79b12, type: 3}
   - {fileID: 21300000, guid: d8cd7df13c36a2d4abcc1e1406b888ee, type: 3}
   - {fileID: 21300000, guid: 48529abc8bd624d439c4459c2ec7ccb4, type: 3}
+  crashSprites:
+  - {fileID: 21300000, guid: 1eff775b4bac2704dab25fa3716395ba, type: 3}
+  - {fileID: 21300000, guid: 531a62abaf22d8c4688b9c3e95628094, type: 3}
+  - {fileID: 21300000, guid: b9e44234976f69343ac6f5f6d9441278, type: 3}
+  - {fileID: 21300000, guid: 3632d1e2e13738c4eb729ee3a5ea2c26, type: 3}
   xPos: 0
   yPos: 0
   height: 0
   width: 0
   type: 0
   color: 0
+  falling: 0
+  crashing: 0
 --- !u!212 &21200000
 SpriteRenderer:
   m_ObjectHideFlags: 1

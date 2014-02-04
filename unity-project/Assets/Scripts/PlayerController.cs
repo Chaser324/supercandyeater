@@ -17,6 +17,9 @@ public class PlayerController : MonoBehaviour {
 	public const float TickSize = 0.03f;
 	public const float TickTime = 0.4f;
 
+	public const float MaxCrashChance = 0.2f;
+	public const float CrashTickSize = 0.05f;
+
 	#endregion
 
 	#region Public Variables
@@ -40,8 +43,10 @@ public class PlayerController : MonoBehaviour {
 
 	private FruitController[,] playfield = new FruitController[FieldCellWidth,FieldCellHeight];
 	private FruitPairController currentPair = null;
+	private FruitPairController nextPair = null;
 
 	private bool tumbling = false;
+	private int tumblePhase = 0;
 
 	private float elapsedTime;
 
@@ -49,11 +54,13 @@ public class PlayerController : MonoBehaviour {
 	private float lastVerticalInput = 0f;
 	private float holdingTime = 0f;
 
+	private float crashChance = 0.0f;
+
 	#endregion
 	
 	#region Event Handlers
 
-	void Start () {
+	void Start() {
 		rng = new System.Random(GameManager.Instance.CurrentMatch.RandomSeed);
 
 		for (int i=0; i<FieldCellWidth; i++) {
@@ -63,7 +70,7 @@ public class PlayerController : MonoBehaviour {
 		}
 	}
 
-	void Update () {
+	void Update() {
 		UpdatePosition();
 
 		elapsedTime += Time.deltaTime * speed;
@@ -74,67 +81,56 @@ public class PlayerController : MonoBehaviour {
         if (elapsedTime >= TickTime) {
 			elapsedTime -= TickTime;
 
-			// Spawn new piece
 			if (!tumbling) {
 				if (currentPair == null) {
-					Transform newPair = Instantiate(fruitControllerPrefab) as Transform;
-					newPair.parent = fruitContainer.transform;
-					currentPair = newPair.gameObject.GetComponent<FruitPairController>();
+					currentPair = nextPair;
 
-					for (int i=0; i<2; i++) {
-						Transform newFruit = Instantiate(fruitPrefab) as Transform;
-						newFruit.parent = currentPair.transform;
-
-						FruitController newFruitController = newFruit.gameObject.GetComponent<FruitController>();
-						newFruitController.type = FruitController.FruitType.Standard;
-						newFruitController.color = (FruitController.FruitColor)(rng.Next((int)FruitController.FruitColor.MAX));
-
-						currentPair[i] = newFruitController;
+					if (currentPair != null) {
+						currentPair.MakeCurrent();
 					}
+
+					GenerateNewPair();
 				}
 				else {
 		            // Apply gravity
 					currentPair.ApplyGravity();
 
+					if (currentPair.transform.localPosition.y <= 0) {
+						nextPair.MakeVisible();
+					}
+
 					if (currentPair.Grounded) {
-						currentPair[0].transform.parent = fruitContainer;
-						currentPair[1].transform.parent = fruitContainer;
-
-						int pairX = Mathf.CeilToInt(currentPair.transform.localPosition.x / CellSize);
-						int pairY = Mathf.CeilToInt(-1f * currentPair.transform.localPosition.y / CellSize) + 1;
-
-						currentPair[0].xPos += pairX;
-						currentPair[0].yPos *= -1;
-						currentPair[0].yPos += pairY;
-						currentPair[1].xPos += pairX;
-						currentPair[1].yPos *= -1;
-						currentPair[1].yPos += pairY;
-
-						playfield[currentPair[0].xPos, currentPair[0].yPos] = currentPair[0];
-						playfield[currentPair[1].xPos, currentPair[1].yPos] = currentPair[1];
-
-						float jellyIntensity = Input.GetButtonDown("InstantDrop") ? 0.5f : 0.1f;
-						currentPair[0].jelly(jellyIntensity);
-						currentPair[1].jelly(jellyIntensity);
-                        
-						tumbling = true;
-						Destroy(currentPair.gameObject);
-						currentPair = null;
+						GroundPair();
 					}
 				}
 			}
 			else {
-				speed = 100.0f;
-	            // Apply gravity
-				tumbling = ApplyGravity();
-
-
-				// Join pieces
-
-				// Remove pieces
-
-				if (!tumbling) {
+				if (tumblePhase == 0) {
+					speed = 100.0f;
+					if (!ApplyGravity()) {
+						++tumblePhase;
+					}
+				}
+				else if (tumblePhase == 1) {
+					// Join pieces
+					++tumblePhase;
+				}
+				else if (tumblePhase == 2) {
+					// Remove fruit
+					int crashed = RemoveFruit();
+					if (crashed > 0) {
+						RemoveFruit();
+						tumblePhase = 0;
+					}
+					else if (crashed == 0) {
+                        ++tumblePhase;
+					}
+				}
+				else {
 					speed = 1.0f;
+					elapsedTime = 0;
+					tumbling = false;
+					tumblePhase = 0;
 				}
 			}
 		}
@@ -168,7 +164,7 @@ public class PlayerController : MonoBehaviour {
 			float screenWidth = Camera.main.pixelWidth;
 			
 			if (slot == FieldPosition.P1) {
-				transform.position = Camera.main.ScreenToWorldPoint(new Vector3(25,screenHeight-25,10));
+				transform.position = Camera.main.ScreenToWorldPoint(new Vector3(25,screenHeight-35,10));
 			}
 			else {
 				transform.position = Camera.main.ScreenToWorldPoint(new Vector3(screenWidth-(98*3)-20,screenHeight-25,10));
@@ -267,10 +263,114 @@ public class PlayerController : MonoBehaviour {
 		return falling;
 	}
 
-	#endregion
+	private int RemoveFruit() {
+		int crashCount = 0;
 
-	#region Public Properties
+		for (int col=0; col<FieldCellWidth; col++) {
+			for (int row=FieldCellHeight-1; row>=0; row--) {
+				FruitController fruit = playfield[col,row];
+				if (fruit != null) {
+					if (!fruit.crashing && fruit.type == FruitController.FruitType.Crash) {
+						crashCount += CrashAdjacent(col, row, fruit);
+					}
+					else if (fruit.crashing) {
+						playfield[col,row] = null;
+						Destroy(fruit.gameObject);
+					}
+				}
+			}
+		}
 
+		return crashCount;
+    }
 
-	#endregion
+	private int CrashAdjacent(int x, int y, FruitController fruit) {
+		int crashCount = 0;
+
+		crashCount += CrashCheck(x+1, y, fruit.color);
+		crashCount += CrashCheck(x-1, y, fruit.color);
+		crashCount += CrashCheck(x, y+1, fruit.color);
+		crashCount += CrashCheck(x, y-1, fruit.color);
+
+		return crashCount;
+	}
+
+	private int CrashCheck(int x, int y, FruitController.FruitColor color) {
+		int crashCount = 0;
+
+		if (x >= 0 && y >= 0 && x < FieldCellWidth && y < FieldCellHeight && playfield[x,y] != null) {
+			FruitController fruit = playfield[x,y];
+			if (fruit.crashing) {
+			}
+			else if (fruit.color == color) {
+				fruit.crashing = true;
+				crashCount = 1 + CrashAdjacent(x, y, fruit);
+			}
+        }
+
+		return crashCount;
+	}
+
+	private void GenerateNewPair() {
+		Transform newPair = Instantiate(fruitControllerPrefab) as Transform;
+		newPair.parent = fruitContainer.transform;
+		nextPair = newPair.gameObject.GetComponent<FruitPairController>();
+		
+		crashChance = Mathf.MoveTowards(crashChance, MaxCrashChance, CrashTickSize);
+		
+		for (int i=0; i<2; i++) {
+			Transform newFruit = Instantiate(fruitPrefab) as Transform;
+			newFruit.parent = nextPair.transform;
+			
+			FruitController newFruitController = newFruit.gameObject.GetComponent<FruitController>();
+			newFruitController.color = (FruitController.FruitColor)(rng.Next((int)FruitController.FruitColor.MAX));
+			
+			if (rng.NextDouble() < crashChance) {
+				newFruitController.type = FruitController.FruitType.Crash;
+			}
+			else {
+				newFruitController.type = FruitController.FruitType.Standard;
+			}
+			
+			nextPair[i] = newFruitController;
+		}
+		
+		if (nextPair[0].type == FruitController.FruitType.Crash || 
+		    nextPair[1].type == FruitController.FruitType.Crash) {
+            crashChance = 0.0f;
+        }
+    }
+
+	private void GroundPair() {
+		currentPair[0].transform.parent = fruitContainer;
+		currentPair[1].transform.parent = fruitContainer;
+		
+		int pairX = Mathf.CeilToInt(currentPair.transform.localPosition.x / CellSize);
+		int pairY = Mathf.CeilToInt(-1f * currentPair.transform.localPosition.y / CellSize) + 1;
+		
+		currentPair[0].xPos += pairX;
+		currentPair[0].yPos *= -1;
+		currentPair[0].yPos += pairY;
+		currentPair[1].xPos += pairX;
+		currentPair[1].yPos *= -1;
+		currentPair[1].yPos += pairY;
+		
+		playfield[currentPair[0].xPos, currentPair[0].yPos] = currentPair[0];
+		playfield[currentPair[1].xPos, currentPair[1].yPos] = currentPair[1];
+		
+		float jellyIntensity = Input.GetButtonDown("InstantDrop") ? 0.5f : 0.1f;
+		currentPair[0].Jelly(jellyIntensity);
+		currentPair[1].Jelly(jellyIntensity);
+		
+		tumbling = true;
+		Destroy(currentPair.gameObject);
+        currentPair = null;
+    }
+    
+    #endregion
+    
+    #region Public Properties
+    
+    
+    #endregion
 }
