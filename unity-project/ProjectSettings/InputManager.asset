@@ -41,7 +41,7 @@ InputManager:
     descriptiveName: Instant Drop - P1
     descriptiveNegativeName: 
     negativeButton: 
-    positiveButton: c
+    positiveButton: b
     altNegativeButton: 
     altPositiveButton: joystick button 0
     gravity: 1000
@@ -57,9 +57,25 @@ InputManager:
     descriptiveName: RotateLeft - P1
     descriptiveNegativeName: 
     negativeButton: 
-    positiveButton: z
+    positiveButton: c
     altNegativeButton: 
     altPositiveButton: joystick button 1
+    gravity: 1000
+    dead: .00100000005
+    sensitivity: 1000
+    snap: 0
+    invert: 0
+    type: 0
+    axis: 0
+    joyNum: 0
+  - serializedVersion: 3
+    m_Name: RotateLeft
+    descriptiveName: RotateLeft - P1
+    descriptiveNegativeName: 
+    negativeButton: 
+    positiveButton: joystick button 4
+    altNegativeButton: 
+    altPositiveButton: 
     gravity: 1000
     dead: .00100000005
     sensitivity: 1000
@@ -73,9 +89,57 @@ InputManager:
     descriptiveName: RotateRight - P1
     descriptiveNegativeName: 
     negativeButton: 
-    positiveButton: x
+    positiveButton: v
     altNegativeButton: 
     altPositiveButton: joystick button 2
+    gravity: 1000
+    dead: .00100000005
+    sensitivity: 1000
+    snap: 0
+    invert: 0
+    type: 0
+    axis: 0
+    joyNum: 0
+  - serializedVersion: 3
+    m_Name: RotateRight
+    descriptiveName: RotateRight - P1
+    descriptiveNegativeName: 
+    negativeButton: 
+    positiveButton: joystick button 5
+    altNegativeButton: 
+    altPositiveButton: 
+    gravity: 1000
+    dead: .00100000005
+    sensitivity: 1000
+    snap: 0
+    invert: 0
+    type: 0
+    axis: 0
+    joyNum: 0
+  - serializedVersion: 3
+    m_Name: MenuConfirm
+    descriptiveName: Confirm - P1
+    descriptiveNegativeName: 
+    negativeButton: 
+    positiveButton: enter
+    altNegativeButton: 
+    altPositiveButton: joystick button 0
+    gravity: 1000
+    dead: .00100000005
+    sensitivity: 1000
+    snap: 0
+    invert: 0
+    type: 0
+    axis: 0
+    joyNum: 0
+  - serializedVersion: 3
+    m_Name: MenuBack
+    descriptiveName: Back - P1
+    descriptiveNegativeName: 
+    negativeButton: 
+    positiveButton: escape
+    altNegativeButton: 
+    altPositiveButton: joystick button 1
     gravity: 1000
     dead: .00100000005
     sensitivity: 1000
@@ -147,4 +211,20 @@ InputManager:
     invert: 0
     type: 2
     axis: 6
+    joyNum: 1
+  - serializedVersion: 3
+    m_Name: Mouse ScrollWheel
+    descriptiveName: 
+    descriptiveNegativeName: 
+    negativeButton: 
+    positiveButton: 
+    altNegativeButton: 
+    altPositiveButton: 
+    gravity: 0
+    dead: .189999998
+    sensitivity: 1
+    snap: 0
+    invert: 0
+    type: 1
+    axis: 2
     joyNum: 1
