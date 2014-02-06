@@ -48,6 +48,7 @@ public class MainMenuButton : MonoBehaviour {
             buttonAudio.PlayOneShot(selectedSound, 1f);
         }
         else {
+            iTween.Stop(this.gameObject);
             this.transform.localScale = new Vector3(1f, 1f, 1f);
             selectedLabel.gameObject.SetActive(false);
             deselectedLabel.gameObject.SetActive(true);

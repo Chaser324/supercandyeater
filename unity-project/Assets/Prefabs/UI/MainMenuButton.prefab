@@ -174,7 +174,7 @@ MonoBehaviour:
   mEffectStyle: 2
   mEffectColor: {r: .800000012, g: .827450991, b: .0862745121, a: 1}
   mSymbols: 1
-  mEffectDistance: {x: 3, y: 3}
+  mEffectDistance: {x: 2, y: 2}
   mOverflow: 0
   mMaterial: {fileID: 0}
   mApplyGradient: 0

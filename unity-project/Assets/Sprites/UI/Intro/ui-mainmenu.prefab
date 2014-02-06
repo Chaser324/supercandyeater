@@ -41,8 +41,47 @@ MonoBehaviour:
   material: {fileID: 2100000, guid: 4417e6fc5d45f034f9ced440eb2ce943, type: 2}
   mSprites:
   - name: menu-bg
+    x: 181
+    y: 332
+    width: 180
+    height: 180
+    borderLeft: 0
+    borderRight: 0
+    borderTop: 0
+    borderBottom: 0
+    paddingLeft: 0
+    paddingRight: 0
+    paddingTop: 0
+    paddingBottom: 0
+  - name: transition-bg-1
     x: 0
-    y: 76
+    y: 151
+    width: 180
+    height: 180
+    borderLeft: 1
+    borderRight: 1
+    borderTop: 1
+    borderBottom: 1
+    paddingLeft: 0
+    paddingRight: 0
+    paddingTop: 0
+    paddingBottom: 0
+  - name: transition-bg-2
+    x: 181
+    y: 151
+    width: 180
+    height: 180
+    borderLeft: 0
+    borderRight: 0
+    borderTop: 0
+    borderBottom: 0
+    paddingLeft: 0
+    paddingRight: 0
+    paddingTop: 0
+    paddingBottom: 0
+  - name: transition-bg-3
+    x: 0
+    y: 332
     width: 180
     height: 180
     borderLeft: 0

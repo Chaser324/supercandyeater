@@ -47,7 +47,7 @@ Things on this list may or may not be implemented depending on time constraints.
 * Chase Pettit ([@chasepettit](https://twitter.com/chasepettit))
 
 ### Tools
-* Unity 4.3 (w/ NGUI)
+* Unity 4.3 (w/ NGUI, iTween)
 * Photoshop CS5.1
 * BFXR
 * Audacity

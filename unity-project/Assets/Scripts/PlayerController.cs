@@ -6,14 +6,14 @@ public class PlayerController : MonoBehaviour {
     #region Constants
 
     public enum FieldPosition {
-        P1,
-        P2 }
-    ;
+        P1 = 1,
+        P2 
+    };
 
     public enum FieldPlayer {
         Human,
-        AI }
-    ;
+        AI
+    };
 
     public const float CellSize = 0.15f;
     public const int FieldCellWidth = 6;
@@ -114,7 +114,7 @@ public class PlayerController : MonoBehaviour {
     #region Public Methods
 
     public bool CellOccupied(int x, int y) {
-        if (y < 0) {
+        if (y < 0 && x >= 0 && x < FieldCellWidth) {
             return false;
         }
         if (x >= 0 && y >= 0 && x < FieldCellWidth && y < FieldCellHeight && playfield[x, y] == null) {
@@ -184,11 +184,11 @@ public class PlayerController : MonoBehaviour {
     
     private void HandleInput() {
         if (currentPair != null) {
-            float horizontal = Input.GetAxis("Horizontal");
-            float vertical = Input.GetAxis("Vertical");
-            bool instantDrop = Input.GetButtonDown("InstantDrop");
-            bool rotateRight = Input.GetButtonDown("RotateRight");
-            bool rotateLeft = Input.GetButtonDown("RotateLeft");
+            float horizontal = Input.GetAxis("Horizontal-P" + (int)slot);
+            float vertical = Input.GetAxis("Vertical-P" + (int)slot);
+            bool instantDrop = Input.GetButtonDown("InstantDrop-P" + (int)slot);
+            bool rotateRight = Input.GetButtonDown("RotateRight-P" + (int)slot);
+            bool rotateLeft = Input.GetButtonDown("RotateLeft-P" + (int)slot);
 
             if (horizontal != lastHorizontalInput || vertical != lastVerticalInput) {
                 holdingTime = 0f;
@@ -373,7 +373,7 @@ public class PlayerController : MonoBehaviour {
             playfield[currentPair[1].xPos, currentPair[1].yPos] = currentPair[1];
         }
         
-        float jellyIntensity = Input.GetButtonDown("InstantDrop") ? 0.5f : 0.1f;
+        float jellyIntensity = Input.GetButtonDown("InstantDrop-P" + (int)slot) ? 0.5f : 0.1f;
         currentPair[0].Jelly(jellyIntensity);
         currentPair[1].Jelly(jellyIntensity);
         

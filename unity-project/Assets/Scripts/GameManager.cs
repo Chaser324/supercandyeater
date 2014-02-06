@@ -3,9 +3,17 @@ using System.Collections;
 
 public class GameManager : MonoBehaviour {
 
+    public enum GameType {
+        Single,
+        Tourney
+    }
+
     private PlayerController.FieldPlayer playerOne = PlayerController.FieldPlayer.Human;
     private PlayerController.FieldPlayer playerTwo = PlayerController.FieldPlayer.Human;
+    private GameType gameType = GameType.Single;
+
     private MatchManager currentMatch;
+
     private static GameManager instance;
 
     #region Event Handlers
@@ -46,6 +54,11 @@ public class GameManager : MonoBehaviour {
     public PlayerController.FieldPlayer PlayerTwo {
         get { return playerTwo; }
         set { playerTwo = value; }
+    }
+
+    public GameType SelectedGameType {
+        get { return gameType; }
+        set { gameType = value; }
     }
 
     public MatchManager CurrentMatch {
