@@ -20,8 +20,10 @@ public class PlayerController : MonoBehaviour {
     public const int FieldCellHeight = 12;
     public const float FieldWidth = FieldCellWidth * CellSize;
     public const float FieldHeight = FieldCellHeight * CellSize;
+
     public const float TickSize = 0.03f;
     public const float TickTime = 0.4f;
+
     public const float MaxCrashChance = 0.2f;
     public const float CrashTickSize = 0.05f;
 
@@ -31,34 +33,58 @@ public class PlayerController : MonoBehaviour {
 
     public FieldPosition slot;
     public FieldPlayer player;
+
     public Transform fruitPrefab;
     public Transform fruitControllerPrefab;
     public Transform fruitContainer;
+    public Transform loseSpew;
+    public Transform winSpew;
+
+
     public float speed = 1.0f;
+
+    public AudioClip turnSound = null;
+    public AudioClip slideSound = null;
+    public AudioClip instantDropSound = null;
+    public AudioClip gulp1 = null;
+    public AudioClip gulp2 = null;
+
+    public bool nearDefeat;
 
     #endregion
 
     #region Private Variables
 
     private Vector2 lastScreenSize;
+
     private System.Random rng;
+
     private FruitController[,] playfield = new FruitController[FieldCellWidth, FieldCellHeight];
     private FruitPairController currentPair = null;
     private FruitPairController nextPair = null;
+
     private bool tumbling = false;
     private int tumblePhase = 0;
+
     private float elapsedTime;
+
     private float lastHorizontalInput = 0f;
     private float lastVerticalInput = 0f;
     private float holdingTime = 0f;
+
     private float crashChance = 0.0f;
+
     private bool lost = false;
+
+    private AudioSource playerAudio = null;
 
     #endregion
     
     #region Event Handlers
 
     void Start() {
+        playerAudio = this.gameObject.AddComponent<AudioSource>();
+
         rng = new System.Random(GameManager.Instance.CurrentMatch.RandomSeed);
 
         for (int i=0; i<FieldCellWidth; i++) {
@@ -78,6 +104,8 @@ public class PlayerController : MonoBehaviour {
         
         if (elapsedTime >= TickTime && !lost) {
             elapsedTime -= TickTime;
+
+            CheckForNearDefeat();
 
             if (!tumbling) {
                 if (currentPair == null) {
@@ -162,6 +190,7 @@ public class PlayerController : MonoBehaviour {
             // Remove fruit
             int crashed = RemoveFruit();
             if (crashed > 0) {
+                Gulp(1f);
                 RemoveFruit();
                 tumblePhase = 0;
             }
@@ -178,8 +207,25 @@ public class PlayerController : MonoBehaviour {
     }
     
     private void Lose() {
-        Debug.Log("lost");
         lost = true;
+
+        nearDefeat = false;
+        iTween.Stop(this.gameObject);
+        UpdatePosition();
+
+        for (int col=0; col<FieldCellWidth; col++) {
+            for (int row=FieldCellHeight-1; row>=0; row--) {
+                FruitController fruit = playfield[col, row];
+                if (fruit != null) {
+                    fruit.Explode();
+                }
+            }
+        }
+
+        currentPair[0].Explode();
+        currentPair[1].Explode();
+
+        loseSpew.gameObject.SetActive(true);
     }
     
     private void HandleInput() {
@@ -206,26 +252,45 @@ public class PlayerController : MonoBehaviour {
 
             if (instantDrop) {
                 currentPair.InstantDrop();
+                playerAudio.PlayOneShot(instantDropSound);
                 if (elapsedTime < TickTime) {
                     elapsedTime = TickTime;
                 }
             }
             else if (rotateRight) {
                 currentPair.Rotate(1);
+                playerAudio.pitch = 1f;
+                playerAudio.PlayOneShot(turnSound);
             }
             else if (rotateLeft) {
                 currentPair.Rotate(-1);
+                playerAudio.pitch = 1f;
+                playerAudio.PlayOneShot(turnSound);
             }
             else if (horizontal == 1.0f && holdingTime == 0f) {
                 currentPair.Translate(1);
+                playerAudio.pitch = 1f;
+                playerAudio.PlayOneShot(slideSound);
             }
             else if (horizontal == -1.0f && holdingTime == 0f) {
                 currentPair.Translate(-1);
+                playerAudio.pitch = 1f;
+                playerAudio.PlayOneShot(slideSound);
             }
             else if (vertical == -1.0f) {
                 speed = 10.0f;
             }
 
+        }
+    }
+
+    private void Gulp(float pitch) {
+        playerAudio.pitch *= pitch;
+        if (Random.Range(0f,1f) > 0.5f) {
+            playerAudio.PlayOneShot(gulp1);
+        }
+        else {
+            playerAudio.PlayOneShot(gulp2);
         }
     }
 
@@ -380,6 +445,45 @@ public class PlayerController : MonoBehaviour {
         tumbling = true;
         Destroy(currentPair.gameObject);
         currentPair = null;
+    }
+
+    private void CheckForNearDefeat() {
+        int highestFilledRow = FieldCellHeight;
+
+        for (int row=0; row<FieldCellHeight; row++) {
+            bool rowFilled = true;
+
+            for (int col=0; col<FieldCellWidth; col++) {
+                if (playfield[col,row] == null) {
+                    rowFilled = false;
+                    break;
+                }
+            }
+
+            if (rowFilled) {
+                highestFilledRow = row;
+                break;
+            }
+        }
+
+        if (highestFilledRow < 5 && !nearDefeat) {
+            nearDefeat = true;
+
+            Hashtable ht = new Hashtable();
+            ht.Add("name", "NearDefeat-P" + (int)slot);
+            ht.Add("x", 0.05f);
+            ht.Add("y", 0.05f);
+            ht.Add("time", 0.2f);
+            ht.Add("looptype", iTween.LoopType.loop);
+            
+            iTween.ShakePosition(this.gameObject, ht);
+        }
+        else if (highestFilledRow >= 5 && nearDefeat) {
+            nearDefeat = false;
+
+            iTween.StopByName("NearDefeat-P" + (int)slot);
+            UpdatePosition();
+        }
     }
     
     #endregion

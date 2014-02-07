@@ -34,6 +34,8 @@ public class FruitController : MonoBehaviour {
     public bool falling = false;
     public bool crashing = false;
 
+    private float rotateAmount;
+
     void Start() {
         SpriteRenderer sr = this.GetComponent<SpriteRenderer>();
 
@@ -56,6 +58,22 @@ public class FruitController : MonoBehaviour {
         sr.color = new Color(1f, 1f, 1f, alpha);
     }
 
+    public void Explode() {
+        float randomOffset = Random.Range(5f,10f);
+        randomOffset *= Random.Range(0f,1f) > 0.5f ? 1f : -1f;
+
+        Hashtable ht = new Hashtable();
+        ht.Add("x", this.transform.position.x + randomOffset);
+        ht.Add("y", -50);
+        ht.Add("speed", 0.5f + Random.Range(1f,1.5f));
+        ht.Add("onupdate", "Rotate");
+
+        rotateAmount = Random.Range(1f,2f);
+        rotateAmount *= Random.Range(0f,1f) > 0.5f ? 1f : -1f;
+        
+        iTween.MoveTo(this.gameObject, ht);
+    }
+
     public void Jelly(float intensity) {
         Hashtable ht = new Hashtable();
         ht.Add("x", 1.0f + intensity);
@@ -64,5 +82,9 @@ public class FruitController : MonoBehaviour {
         ht.Add("easetype", iTween.EaseType.easeOutElastic);
 
         iTween.ScaleFrom(this.gameObject, ht);
+    }
+
+    private void Rotate() {
+        this.transform.localEulerAngles = new Vector3(0,0,this.transform.localEulerAngles.z + rotateAmount);
     }
 }

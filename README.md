@@ -1,4 +1,4 @@
-# Super Candy Eater Saga II Turbo: Cease & Desist Edition
+# Super Candy Eater Saga II Turbo
 
 A puzzle game for the [Candy Jam](http://itch.io/jam/candyjam) and [#1GAM](http://www.onegameamonth.com/).
 
@@ -57,9 +57,12 @@ Things on this list may or may not be implemented depending on time constraints.
 
 ### Music
 * Game On by [DST](http://nosoapradio.us), CC-BY
+* Orange Razor by [DST](http://nosoapradio.us), CC-BY
+* The Park by [DST](http://nosoapradio.us), CC-BY
 
 ### Misc Audio
 * Chomping, [scottemoil](http://www.freesound.org/people/scottemoil/sounds/188440/), CC-0
+* gulps.wav [GagaMan](http://freesound.org/people/GagaMan/sounds/88510/), CC-BY
 
 ### Special Thanks
 * [@itchio](https://twitter.com/itchio) and [@moonscript](https://twitter.com/moonscript) for hosting the Candy Jam site.
