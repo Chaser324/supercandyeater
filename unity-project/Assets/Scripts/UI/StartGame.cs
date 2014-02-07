@@ -31,7 +31,6 @@ public class StartGame : MonoBehaviour {
         volTween.to = 0f;
         volTween.delay = 2.0f;
         volTween.duration = 2.5f;
-        
 
         panel.gameObject.SetActive(true);
         

@@ -74,7 +74,8 @@ public class PlayerController : MonoBehaviour {
 
     private float crashChance = 0.0f;
 
-    private bool lost = false;
+    public bool lost = false;
+    public bool won = false;
 
     private AudioSource playerAudio = null;
 
@@ -97,12 +98,14 @@ public class PlayerController : MonoBehaviour {
     void Update() {
         UpdatePosition();
 
+        if (GameManager.Instance.Paused) { return; }
+
         elapsedTime += Time.deltaTime * speed;
 
         // Handle player input
         HandleInput();
         
-        if (elapsedTime >= TickTime && !lost) {
+        if (elapsedTime >= TickTime && !lost && !won) {
             elapsedTime -= TickTime;
 
             CheckForNearDefeat();
@@ -133,6 +136,9 @@ public class PlayerController : MonoBehaviour {
             else {
                 Tumble();
             }
+        }
+        else if (won && !winSpew.gameObject.activeSelf) {
+            Win();
         }
 
     }
@@ -165,12 +171,19 @@ public class PlayerController : MonoBehaviour {
 
             float screenHeight = Camera.main.pixelHeight;
             float screenWidth = Camera.main.pixelWidth;
+            float screenAspect = (16f/9f) / Camera.main.aspect;
             
             if (slot == FieldPosition.P1) {
-                transform.position = Camera.main.ScreenToWorldPoint(new Vector3(25, screenHeight - 35, 10));
+                transform.position = 
+                    Camera.main.ScreenToWorldPoint(new Vector3(25 * screenWidth/1280 * screenAspect, 
+                                                               screenHeight - 35 * screenHeight/720 * screenAspect, 
+                                                               10));
             }
             else {
-                transform.position = Camera.main.ScreenToWorldPoint(new Vector3(screenWidth - (98 * 3) - 20, screenHeight - 25, 10));
+                transform.position = 
+                    Camera.main.ScreenToWorldPoint(new Vector3(screenWidth - 315 * screenWidth/1280 * screenAspect, 
+                                                               screenHeight - 35 * screenHeight/720 * screenAspect, 
+                                                               10));
             }
         }
     }
@@ -226,6 +239,28 @@ public class PlayerController : MonoBehaviour {
         currentPair[1].Explode();
 
         loseSpew.gameObject.SetActive(true);
+    }
+
+    private void Win() {
+        won = true;
+        
+        nearDefeat = false;
+        iTween.Stop(this.gameObject);
+        UpdatePosition();
+        
+        for (int col=0; col<FieldCellWidth; col++) {
+            for (int row=FieldCellHeight-1; row>=0; row--) {
+                FruitController fruit = playfield[col, row];
+                if (fruit != null) {
+                    fruit.Explode();
+                }
+            }
+        }
+        
+        currentPair[0].Explode();
+        currentPair[1].Explode();
+        
+        winSpew.gameObject.SetActive(true);
     }
     
     private void HandleInput() {
@@ -489,7 +524,6 @@ public class PlayerController : MonoBehaviour {
     #endregion
     
     #region Public Properties
-    
-    
+
     #endregion
 }

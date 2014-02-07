@@ -8,6 +8,12 @@ public class MatchManager : MonoBehaviour {
     public Transform fieldPrefab;
 
     public Transform goPanel;
+    public Transform optionsPanel;
+
+    public Transform p1WonPanel;
+    public Transform p1LosePanel;
+    public Transform p2WonPanel;
+    public Transform p2LosePanel;
 
     public AudioClip musicIntro;
     public AudioClip musicLoop;
@@ -57,7 +63,44 @@ public class MatchManager : MonoBehaviour {
             ++phase;
         }
         else if (phase == 3) {
-            SetIntensity(players[0].nearDefeat || players[1].nearDefeat);
+            if (Input.GetButtonDown("Pause")) {
+                GameManager.Instance.Paused = !GameManager.Instance.Paused;
+                optionsPanel.gameObject.SetActive(GameManager.Instance.Paused);
+            }
+
+            if (!GameManager.Instance.Paused) {
+                SetIntensity(players[0].nearDefeat || players[1].nearDefeat);
+
+                if (players[0].lost) {
+                    players[1].won = true;
+
+                    p1LosePanel.gameObject.SetActive(true);
+                    p2WonPanel.gameObject.SetActive(true);
+
+                    ++phase;
+
+                }
+                else if (players[1].lost) {
+                    players[0].won = true;
+
+                    p2LosePanel.gameObject.SetActive(true);
+                    p1WonPanel.gameObject.SetActive(true);
+
+                    ++phase;
+                }
+            }
+            else {
+                if (!optionsPanel.gameObject.activeInHierarchy) {
+                    GameManager.Instance.Paused = false;
+                }
+
+                musicAudio.volume = GameManager.Instance.musicVol;
+                musicIntroAudio.volume = GameManager.Instance.musicVol;
+            }
+        }
+        else if (phase == 4) {
+            StartCoroutine(ReturnToMainMenu());
+            ++phase;
         }
     }
 
@@ -139,6 +182,15 @@ public class MatchManager : MonoBehaviour {
         
         goPanel.gameObject.SetActive(false);
         ++phase;
+    }
+
+    private IEnumerator ReturnToMainMenu() {
+        yield return new WaitForSeconds(5f);
+
+        while (!Input.anyKeyDown)
+            yield return 0;
+
+        Application.LoadLevel("mainmenu");
     }
 
     #endregion

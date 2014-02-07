@@ -8,6 +8,9 @@ public class GameManager : MonoBehaviour {
         Tourney
     }
 
+    public float musicVol = 1.0f;
+    public float soundVol = 1.0f;
+
     private PlayerController.FieldPlayer playerOne = PlayerController.FieldPlayer.Human;
     private PlayerController.FieldPlayer playerTwo = PlayerController.FieldPlayer.Human;
     private GameType gameType = GameType.Single;
@@ -15,6 +18,8 @@ public class GameManager : MonoBehaviour {
     private MatchManager currentMatch;
 
     private static GameManager instance;
+
+    private bool paused = false;
 
     #region Event Handlers
 
@@ -64,6 +69,11 @@ public class GameManager : MonoBehaviour {
     public MatchManager CurrentMatch {
         get { return currentMatch; }
         set { currentMatch = value; }
+    }
+
+    public bool Paused {
+        get { return paused; }
+        set { paused = value; }
     }
 
     #endregion
